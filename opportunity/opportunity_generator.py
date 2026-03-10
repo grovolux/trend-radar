@@ -1,1 +1,1 @@
-
+print("Opportunity generator placeholder")
