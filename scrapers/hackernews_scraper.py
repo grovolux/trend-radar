@@ -1,24 +1,15 @@
 import requests
 import pandas as pd
 
-url = "https://hacker-news.firebaseio.com/v0/topstories.json"
+url = "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=100"
 
-response = requests.get(url)
-story_ids = response.json()[:20]
+data = requests.get(url).json()
 
-posts = []
-
-for story_id in story_ids:
-    item_url = f"https://hacker-news.firebaseio.com/v0/item/{story_id}.json"
-    item = requests.get(item_url).json()
-
-    posts.append({
-        "title": item.get("title"),
-        "score": item.get("score"),
-        "comments": item.get("descendants"),
-        "url": item.get("url")
+results = []
+for item in data["hits"]:
+    results.append({
+        "title": item.get("title", ""),
+        "score": item.get("points", 0)
     })
 
-df = pd.DataFrame(posts)
-
-print(df.to_string())
+pd.DataFrame(results).to_csv("hackernews_trends.csv", index=False)
